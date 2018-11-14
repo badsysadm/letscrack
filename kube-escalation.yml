@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hack-m01
+  labels:
+    badsysadm: yes
+    lol: yes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      lol: yes
+      badsysadm: yes
+  template:
+    spec:
+      volumes:
+      - hostPath:
+        path: /
+        name: hostrootfs
+      hostPID: true
+      containers:
+      - image: alpine:3.8
+        command: "sh -c 'sleep 999999'"
+        name: lol
+        tty: true
+        volumeMounts:
+        - name: hostrootfs
+          mountPath: /mnt
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            add: ["NET_ADMIN"]
