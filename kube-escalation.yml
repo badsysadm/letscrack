@@ -1,56 +1,36 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: hack-m01
   labels:
-    badsysadm: yes
-    lol: yes
+    badsysadm: "yes"
+    lol: "yes"
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      lol: yes
-      badsysadm: yes
+      lol: "yes"
+      badsysadm: "yes"
   template:
+    metadata:
+      labels:
+        lol: "yes"
+        badsysadm: "yes"
     spec:
-      volumes:
-      - hostPath:
-        path: /
-        name: hostrootfs
       hostPID: true
       containers:
       - image: alpine:3.8
-        command: "sh -c 'sleep 999999'"
-        name: lol
+        command: ["sh", "-c", "sleep 999999"]
+        name: "lol"
         tty: true
         volumeMounts:
-        - name: hostrootfs
+        - name: root
           mountPath: /mnt
         securityContext:
           allowPrivilegeEscalation: true
           capabilities:
             add: ["NET_ADMIN"]
-
----
-
-apiVersion: v1
-kind: Pod
-metadata:
-  name: test-pd
-spec:
-  containers:
-  - image: nginx
-    name: test-container
-    tty: true
-    volumeMounts:
-    - mountPath: /mnt
-      name: test-volume
-    securityContext:
-      allowPrivilegeEscalation: true
-      capabilities:
-        add: ["NET_ADMIN"]
-  volumes:
-  - name: test-volume
-    hostPath:
-      path: /
-      type: Directory
+      volumes:
+      - name: root
+        hostPath:
+          path: /
+          type: Directory
